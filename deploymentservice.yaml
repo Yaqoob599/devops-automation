@@ -12,6 +12,9 @@ spec:
       labels:
         app: spring-boot-k8s
     spec:
+      serviceAccountName: yaqoob-new
+      imagePullSecrets:
+        - name: ecr-reg-secret 
       containers:
         - name: spring-boot-k8s
           image: 140023400586.dkr.ecr.ap-south-1.amazonaws.com/dec-2025:V1
