@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: spring-boot-k8s
-          image: javatechie/devops-integration # Image that will be used to containers in the cluster
+          image: 140023400586.dkr.ecr.ap-south-1.amazonaws.com/dec-2025:AB1
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080 # The port that the container is running on in the cluster
