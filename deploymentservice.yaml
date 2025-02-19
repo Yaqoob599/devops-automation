@@ -20,7 +20,7 @@ spec:
           image: 140023400586.dkr.ecr.ap-south-1.amazonaws.com/dec-2025:V1
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8050 # The port that the container is running on in the cluster
+            - containerPort: 8080 # The port that the container is running on in the cluster
 
 
 ---
@@ -34,6 +34,6 @@ spec:
     app: spring-boot-k8s
   ports:
     - protocol: "TCP"
-      port: 8050 # The port that the service is running on in the cluster
-      targetPort: 8050 # The port exposed by the service
+      port: 8080 # The port that the service is running on in the cluster
+      targetPort: 8080 # The port exposed by the service
   type: NodePort # type of the service.
