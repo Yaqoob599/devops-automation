@@ -8,7 +8,7 @@ pipeline {
         IMAGE_TAG = "V2"
         REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/dec-2025"
         SCANNER_HOME = tool 'sonar-scanner'
-        CHART_NAME = "yaqoob-helm"  // Helm chart name
+        CHART_NAME = "assign"  // Helm chart name
         RELEASE_NAME = "spring-boot-app"
         NAMESPACE = "default"
     }
