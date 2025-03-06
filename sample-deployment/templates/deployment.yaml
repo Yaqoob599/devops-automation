@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: useraccount
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: useraccount
+  template:
+    metadata:
+      labels:
+        app: useraccount
+    spec:
+      containers:
+      - image: artisantek/useraccount:version1
+        name: useraccount
+        ports:
+        - containerPort: 3080
