@@ -17,7 +17,7 @@ spec:
         - name: ecr-reg-secret 
       containers:
         - name: spring-boot-k8s
-          image: 140023400586.dkr.ecr.ap-south-1.amazonaws.com/dec-2025:V1
+          image: 140023400586.dkr.ecr.ap-south-1.amazonaws.com/dec-2025:V2
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080 # The port that the container is running on in the cluster
