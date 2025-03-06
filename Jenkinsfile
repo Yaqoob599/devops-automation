@@ -1,14 +1,18 @@
-
 pipeline {
     agent any
+
     environment {
         AWS_ACCOUNT_ID = "140023400586"
         AWS_DEFAULT_REGION = "ap-south-1"
         IMAGE_REPO_NAME = "docker-pipeline"
         IMAGE_TAG = "V2"
         REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/dec-2025"
-		    SCANNER_HOME= tool 'sonar-scanner'
+        SCANNER_HOME = tool 'sonar-scanner'
+        CHART_NAME = "yaqoob-helm"  // Helm chart name
+        RELEASE_NAME = "spring-boot-app"
+        NAMESPACE = "default"
     }
+
     stages {
         stage('Checkout Source Code') {
             steps {
@@ -16,12 +20,12 @@ pipeline {
             }
         }
       
-		stage('building artifact and unit testing'){
-		    steps{
-			    sh 'mvn clean package'
-				}
-			}
-		
+        stage('Build & Unit Test') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        
         stage('Build Docker Image') {
             steps {
                 sh """
@@ -29,6 +33,7 @@ pipeline {
                 """
             }
         }
+
         stage('Push to AWS ECR') {
             steps {
                 script {
@@ -40,25 +45,39 @@ pipeline {
                     """
                 }
             }
-          }
-        
+        }
 
-        stage('deploying to kubernetes') {
-    steps {
-        withKubeConfig(
-            caCertificate: '', // Optional if credentialsId includes this
-            clusterName: 'kubernetes',
-            contextName: 'kubernetes-admin@kubernetes', // Provide valid context name
-            credentialsId: 'kubernetes', // Ensure this exists in Jenkins credentials
-            namespace: 'default',
-            restrictKubeConfigAccess: false,
-            serverUrl: 'https://172.31.43.46:6443' // Ensure no spaces or invalid characters
-        ) {
-            sh '''
-                kubectl apply -f deploymentservice.yaml
-            '''
+        stage('Deploy to Kubernetes using Helm') {
+            steps {
+                withKubeConfig(
+                    credentialsId: 'kubernetes', // Ensure this exists in Jenkins credentials
+                    contextName: 'kubernetes-admin@kubernetes',
+                    namespace: "${NAMESPACE}",
+                    serverUrl: 'https://172.31.43.46:6443'
+                ) {
+                    sh """
+                        helm upgrade --install ${RELEASE_NAME} ${CHART_NAME} \
+                        --set image.repository=${REPOSITORY_URI} \
+                        --set image.tag=${IMAGE_TAG} \
+                        --namespace ${NAMESPACE}
+                    """
+                }
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                sh "kubectl get pods -n ${NAMESPACE}"
+            }
         }
     }
-}
+
+    post {
+        success {
+            echo "Deployment Successful!"
+        }
+        failure {
+            echo " Deployment Failed!"
+        }
     }
 }
