@@ -9,7 +9,7 @@ pipeline {
         REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/dec-2025"
         SCANNER_HOME = tool 'sonar-scanner'
         CHART_NAME = "assign"  // Helm chart name
-        RELEASE_NAME = "spring-boot-app"
+        RELEASE_NAME = "assign"
         NAMESPACE = "default"
     }
 
@@ -56,7 +56,7 @@ pipeline {
                     serverUrl: 'https://172.31.43.46:6443'
                 ) {
                     sh """
-                        helm upgrade --install ${CHART_NAME} /home/ubuntu/assign/assignment
+                        helm upgrade --install ${CHART_NAME} ./assignment
                         --set image.repository=${REPOSITORY_URI} \
                         --set image.tag=${IMAGE_TAG} \
                         --namespace ${NAMESPACE}
