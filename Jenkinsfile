@@ -60,7 +60,8 @@ pipeline {
                                 --set image.repository=${REPOSITORY_URI} \\
                                 --set image.tag=${IMAGE_TAG} \\
                                 --namespace ${NAMESPACE} \\
-                                --debug
+                                --debug \
+                                --history-max 2
                         """
                     }
 
