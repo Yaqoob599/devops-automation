@@ -1,15 +1,14 @@
 pipeline {
     agent any
-
     environment {
         AWS_ACCOUNT_ID = "140023400586"
         AWS_DEFAULT_REGION = "ap-south-1"
         IMAGE_REPO_NAME = "docker-pipeline"
         IMAGE_TAG = "V2"
-        REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/dec-2025"
+        REPOSITORY_URI = "140023400586.dkr.ecr.ap-south-1.amazonaws.com/dec-2025"
         CHART_NAME = "new1"  // Helm chart name
         NAMESPACE = "default"
-        DOCKER_CREDENTIALS_ID = credentials('DOCKERHUB_PASSWORD')
+        DOCKER_REGISTRY = "https://index.docker.io/v1/"
     }
 
     stages {
@@ -18,22 +17,25 @@ pipeline {
                 git branch: 'main', changelog: false, poll: false, url: 'https://github.com/Yaqoob599/devops-automation.git'
             }
         }
-      
+
         stage('Build & Unit Test') {
             steps {
                 sh 'mvn clean package'
             }
         }
-        
+
         stage('Login to Docker') {
             steps {
-                withCredentials([string(credentialsId: "${DOCKER_CREDENTIALS_ID}", variable: 'DOCKERHUB_PASSWORD')]) {
-                    sh """
-                    echo "$DOCKERHUB_PASSWORD" | docker login -u "yaqoobali" --password-stdin $DOCKER_REGISTRY
-                    """
+                withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_PASSWORD', 
+                                                 usernameVariable: 'DOCKER_USER', 
+                                                 passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh '''
+                    echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin $DOCKER_REGISTRY
+                    '''
                 }
             }
         }
+        
         stage('Build Docker Image') {
             steps {
                 sh """
