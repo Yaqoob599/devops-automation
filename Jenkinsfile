@@ -58,15 +58,17 @@ pipeline {
             }
         }
 
-stage('Configure AWS CLI & Kubeconfig') {
+        stage('Configure AWS CLI & Kubeconfig') {
     steps {
-        withCredentials([file(credentialsId: 'K8S_CREDENTIALS', variable: 'KUBECONFIG_FILE')]) {
+        withCredentials([aws(credentialsId: 'AWS_CREDENTIALS', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
             sh '''
+            export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+            export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+            export AWS_DEFAULT_REGION=ap-south-1
             export KUBECONFIG=/tmp/kubeconfig
-            cp $KUBECONFIG_FILE $KUBECONFIG
-            chmod 600 $KUBECONFIG
+
             aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME --kubeconfig $KUBECONFIG
-            kubectl config current-context
+            chmod 600 $KUBECONFIG
             kubectl config view
             kubectl get nodes
             '''
