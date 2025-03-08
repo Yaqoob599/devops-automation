@@ -55,10 +55,12 @@ pipeline {
                     serverUrl: 'https://172.31.43.46:6443'
                 ) {
                     sh """
-                        helm upgrade --install ${CHART_NAME} .
-                        --set image.repository=${REPOSITORY_URI} \
-                        --set image.tag=${IMAGE_TAG} \
-                        --namespace ${NAMESPACE}
+                        helm package .
+                        helm upgrade --install ${CHART_NAME} ./your-chart.tgz \
+                            --set image.repository=${REPOSITORY_URI} \
+                            --set image.tag=${IMAGE_TAG} \
+                            --namespace ${NAMESPACE} \
+                            --debug
                     """
                 }
             }
