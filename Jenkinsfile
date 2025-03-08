@@ -7,7 +7,6 @@ pipeline {
         IMAGE_REPO_NAME = "docker-pipeline"
         IMAGE_TAG = "V2"
         REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/dec-2025"
-        SCANNER_HOME = tool 'sonar-scanner'
         CHART_NAME = "new1"  // Helm chart name
         NAMESPACE = "default"
     }
