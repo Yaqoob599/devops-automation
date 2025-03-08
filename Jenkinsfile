@@ -55,7 +55,7 @@ pipeline {
                     serverUrl: 'https://172.31.43.46:6443'
                 ) {
                         sh """
-                        export HELM_DRIVER=configmap
+                        export HELM_DRIVER=secret
                         helm upgrade --install ${CHART_NAME} ./assign-0.1.0.tgz \
                             --set image.repository=${REPOSITORY_URI} \
                             --set image.tag=${IMAGE_TAG} \
