@@ -54,15 +54,16 @@ pipeline {
                     namespace: "${NAMESPACE}",
                     serverUrl: 'https://172.31.43.46:6443'
                 ) {
-                    sh """
-                        helm package .
-                        helm upgrade --install ${CHART_NAME} ./your-chart.tgz \
-                            --set image.repository=${REPOSITORY_URI} \
-                            --set image.tag=${IMAGE_TAG} \
-                            --namespace ${NAMESPACE} \
-                            --debug
-                    """
-                }
+                        sh """
+                            helm package .
+                            helm upgrade --install ${CHART_NAME} ./assign-0.1.0.tgz \\
+                                --set image.repository=${REPOSITORY_URI} \\
+                                --set image.tag=${IMAGE_TAG} \\
+                                --namespace ${NAMESPACE} \\
+                                --debug
+                        """
+                    }
+
             }
         }
 
