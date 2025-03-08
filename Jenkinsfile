@@ -60,7 +60,7 @@ pipeline {
 
         stage('Configure AWS CLI & Kubeconfig') {
             steps {
-                withCredentials([file(credentialsId: "${K8S_CREDENTIALS_ID}", variable: 'KUBECONFIG')]) {
+                withCredentials([file(credentialsId: "${K8S_CREDENTIALS}", variable: 'KUBECONFIG')]) {
                     sh '''
                     aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME
                     kubectl config current-context
