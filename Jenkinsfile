@@ -58,19 +58,20 @@ pipeline {
             }
         }
 
-        stage('Configure AWS CLI & Kubeconfig') {
+stage('Configure AWS CLI & Kubeconfig') {
     steps {
-        withCredentials([file(credentialsId: 'K8S_CREDENTIALS', variable: 'KUBECONFIG')]) {
+        withCredentials([file(credentialsId: 'K8S_CREDENTIALS', variable: 'KUBECONFIG_FILE')]) {
             sh '''
-            export KUBECONFIG=$KUBECONFIG
-            aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME
+            export KUBECONFIG=/tmp/kubeconfig
+            cp $KUBECONFIG_FILE $KUBECONFIG
+            chmod 600 $KUBECONFIG
+            aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME --kubeconfig $KUBECONFIG
             kubectl config current-context
             '''
         }
     }
 }
-
-         
+      
         stage('Deploy Helm Chart') {
                 steps {    
                     sh """
