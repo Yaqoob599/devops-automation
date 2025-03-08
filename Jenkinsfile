@@ -67,6 +67,8 @@ stage('Configure AWS CLI & Kubeconfig') {
             chmod 600 $KUBECONFIG
             aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME --kubeconfig $KUBECONFIG
             kubectl config current-context
+            kubectl config view
+            kubectl get nodes
             '''
         }
     }
