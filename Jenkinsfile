@@ -6,6 +6,7 @@ pipeline {
         IMAGE_REPO_NAME = "docker-pipeline"
         IMAGE_TAG = "V2"
         REPOSITORY_URI = "140023400586.dkr.ecr.ap-south-1.amazonaws.com/dec-2025"
+        EKS_CLUSTER_NAME = "eks-cluster"
         CHART_NAME = "new1"  // Helm chart name
         NAMESPACE = "default"
         DOCKER_REGISTRY = "https://index.docker.io/v1/"
@@ -57,15 +58,20 @@ pipeline {
             }
         }
 
-        stage('Deploy to Kubernetes using Helm') {
+        stage('Configure AWS CLI & Kubeconfig') {
             steps {
-                withKubeConfig(
-                    credentialsId: 'kubernetes', // Ensure this exists in Jenkins credentials
-                    contextName: 'kubernetes-admin@kubernetes',
-                    namespace: "${NAMESPACE}",
-                    serverUrl: 'https://172.31.43.46:6443'
-                ) {
-                        sh """
+                withCredentials([file(credentialsId: "${K8S_CREDENTIALS_ID}", variable: 'KUBECONFIG')]) {
+                    sh '''
+                    aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME
+                    kubectl config current-context
+                    '''
+                }
+            }
+        }
+         
+        stage('Deploy Helm Chart') {
+                steps {    
+                    sh """
                         helm upgrade --install ${CHART_NAME} . \
                             --set image.repository=${REPOSITORY_URI} \
                             --set image.tag=${IMAGE_TAG} \
@@ -75,7 +81,7 @@ pipeline {
                     }
 
             }
-        }
+        
 
         stage('Verify Deployment') {
             steps {
@@ -83,6 +89,7 @@ pipeline {
             }
         }
     }
+}
 
     post {
         success {
