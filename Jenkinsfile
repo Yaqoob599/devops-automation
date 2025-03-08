@@ -55,14 +55,13 @@ pipeline {
                     serverUrl: 'https://172.31.43.46:6443'
                 ) {
                         sh """
-                            helm package .
-                            helm upgrade --install new1 ./assign-0.1.0.tgz \
-                                        --set image.repository=140023400586.dkr.ecr.ap-south-1.amazonaws.com/dec-2025 \
-                                        --set image.tag=V2 \
-                                        --namespace default \
-                                        --debug \
-                                        --storage-configmaps                 
-                        """
+                        export HELM_DRIVER=configmap
+                        helm upgrade --install ${CHART_NAME} ./assign-0.1.0.tgz \
+                            --set image.repository=${REPOSITORY_URI} \
+                            --set image.tag=${IMAGE_TAG} \
+                            --namespace ${NAMESPACE} \
+                            --debug
+                    """
                     }
 
             }
