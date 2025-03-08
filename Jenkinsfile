@@ -9,6 +9,7 @@ pipeline {
         REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/dec-2025"
         CHART_NAME = "new1"  // Helm chart name
         NAMESPACE = "default"
+        DOCKER_CREDENTIALS_ID = credentials('DOCKERHUB_PASSWORD')
     }
 
     stages {
@@ -24,6 +25,15 @@ pipeline {
             }
         }
         
+        stage('Login to Docker') {
+            steps {
+                withCredentials([string(credentialsId: "${DOCKER_CREDENTIALS_ID}", variable: 'DOCKERHUB_PASSWORD')]) {
+                    sh """
+                    echo "$DOCKERHUB_PASSWORD" | docker login -u "yaqoobali" --password-stdin $DOCKER_REGISTRY
+                    """
+                }
+            }
+        }
         stage('Build Docker Image') {
             steps {
                 sh """
