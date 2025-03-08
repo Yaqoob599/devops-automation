@@ -21,3 +21,12 @@
 .idea/
 *.tmproj
 .vscode/
+*.tgz
+*.log
+*.jpg
+*.png
+*.mp4
+*.zip
+node_modules/
+vendor/
+
