@@ -60,47 +60,29 @@ pipeline {
 
         stage('Configure AWS CLI & Kubeconfig') {
     steps {
-        withCredentials([aws(credentialsId: 'AWS_CREDENTIALS', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+        withCredentials([file(credentialsId: 'K8S_CREDENTIALS', variable: 'KUBECONFIG')]) {
             sh '''
-            export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-            export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-            export AWS_DEFAULT_REGION=ap-south-1
-            export KUBECONFIG=/tmp/kubeconfig
-
-            aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME --kubeconfig $KUBECONFIG
-            chmod 600 $KUBECONFIG
-            kubectl config view
-            kubectl get nodes
+            export KUBECONFIG=$KUBECONFIG
+            aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME
+            kubectl config current-context
             '''
         }
     }
 }
+
       
         stage('Deploy Helm Chart') {
-    steps {
-        sh '''
-        # Ensure KUBECONFIG is set correctly
-        export KUBECONFIG=/tmp/kubeconfig  
+                steps {    
+                    sh """
+                        helm upgrade --install ${CHART_NAME} . \
+                            --set image.repository=${REPOSITORY_URI} \
+                            --set image.tag=${IMAGE_TAG} \
+                            --namespace ${NAMESPACE} \
+                            --debug
+                    """
+                    }
 
-        # Debug: Verify current Kubernetes context and cluster connection
-        echo "Checking Kubeconfig..."
-        cat $KUBECONFIG
-        kubectl config view --minify
-        kubectl cluster-info
-        kubectl get nodes
-
-        # Verify Helm can connect to the cluster
-        kubectl get pods -n ${NAMESPACE}
-
-        # Deploy Helm chart
-        helm upgrade --install ${CHART_NAME} . \
-            --set image.repository=${REPOSITORY_URI} \
-            --set image.tag=${IMAGE_TAG} \
-            --namespace ${NAMESPACE} \
-            --debug
-        '''
-    }
-}
+            }
 
 
         
