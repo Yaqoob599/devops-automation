@@ -59,12 +59,19 @@ pipeline {
         }
 
         stage ('Helm Deploy') {
-          steps {
-            script {
-                sh "helm upgrade first --install ${CHART_NAME} --namespace ${NAMESPACE} --set image.tag=$BUILD_NUMBER"
-                }
-            }
+    steps {
+        script {
+            sh '''
+            export KUBECONFIG=/home/ubuntu/.kube/config  # Ensure correct kubeconfig
+            kubectl config view  # Debug: Check kubeconfig
+            kubectl get nodes  # Debug: Ensure cluster is reachable
+
+            helm upgrade --install ${CHART_NAME} --namespace ${NAMESPACE} --set image.tag=${IMAGE_TAG} --debug
+            '''
         }
+    }
+}
+
     }
 }
 
