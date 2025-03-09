@@ -61,7 +61,7 @@ pipeline {
         stage ('Helm Deploy') {
           steps {
             script {
-                sh "helm upgrade --install ${CHART_NAME} --namespace ${NAMESPACE} --set image.tag=$BUILD_NUMBER"
+                sh "helm upgrade first --install ${CHART_NAME} --namespace ${NAMESPACE} --set image.tag=$BUILD_NUMBER"
                 }
             }
         }
