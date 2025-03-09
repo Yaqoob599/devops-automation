@@ -7,6 +7,6 @@ spec:
     app: spring-boot-k8s
   ports:
     - protocol: TCP
-      port: 3080       # Clients will use this port
-      targetPort: 8080 # Forward traffic to the container's port
-  type: LoadBalancer
+      port: 3080       # External port users will access
+      targetPort: 8080 # Maps to containerPort in the Deployment
+  type: ClusterIP
