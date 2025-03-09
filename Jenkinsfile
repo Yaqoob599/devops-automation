@@ -66,7 +66,7 @@ pipeline {
             kubectl config view  # Debug: Check kubeconfig
             kubectl get nodes  # Debug: Ensure cluster is reachable
 
-            helm upgrade --install ${CHART_NAME} --namespace ${NAMESPACE} --set image.tag=${IMAGE_TAG} --debug
+            helm upgrade first --install ${CHART_NAME} --namespace ${NAMESPACE} --set image.tag=${IMAGE_TAG} --debug
             '''
         }
     }
