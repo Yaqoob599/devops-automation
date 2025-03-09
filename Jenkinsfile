@@ -77,17 +77,21 @@ pipeline {
 }
       
         stage('Deploy Helm Chart') {
-                steps {    
-                    sh """
-                        helm upgrade --install ${CHART_NAME} . \
-                            --set image.repository=${REPOSITORY_URI} \
-                            --set image.tag=${IMAGE_TAG} \
-                            --namespace ${NAMESPACE} \
-                            --debug
-                    """
-                    }
+    steps {
+        sh '''
+        export KUBECONFIG=/tmp/kubeconfig  # Ensure Helm uses the same Kubeconfig
+        kubectl config view  # Debug: Check current context
+        kubectl cluster-info  # Debug: Ensure cluster is reachable
 
-            }
+        helm upgrade --install ${CHART_NAME} . \
+            --set image.repository=${REPOSITORY_URI} \
+            --set image.tag=${IMAGE_TAG} \
+            --namespace ${NAMESPACE} \
+            --debug
+        '''
+    }
+}
+
         
 
         stage('Verify Deployment') {
