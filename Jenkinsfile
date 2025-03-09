@@ -58,38 +58,11 @@ pipeline {
             }
         }
 
-        stage('Configure AWS CLI & Kubeconfig') {
-    steps {
-        withCredentials([file(credentialsId: 'K8S_CREDENTIALS', variable: 'KUBECONFIG')]) {
-            sh '''
-            export KUBECONFIG=$KUBECONFIG
-            aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME
-            kubectl config current-context
-            '''
-        }
-    }
-}
-
-      
-        stage('Deploy Helm Chart') {
-                steps {    
-                    sh """
-                        helm upgrade --install ${CHART_NAME} . \
-                            --set image.repository=${REPOSITORY_URI} \
-                            --set image.tag=${IMAGE_TAG} \
-                            --namespace ${NAMESPACE} \
-                            --debug
-                    """
-                    }
-
-            }
-
-
-        
-
-        stage('Verify Deployment') {
-            steps {
-                sh "kubectl get pods -n ${NAMESPACE}"
+        stage ('Helm Deploy') {
+          steps {
+            script {
+                sh "helm upgrade --install ${CHART_NAME} --namespace ${NAMESPACE} --set image.tag=$BUILD_NUMBER"
+                }
             }
         }
     }
