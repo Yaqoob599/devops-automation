@@ -79,10 +79,20 @@ pipeline {
         stage('Deploy Helm Chart') {
     steps {
         sh '''
-        export KUBECONFIG=/tmp/kubeconfig  # Ensure Helm uses the same Kubeconfig
-        kubectl config view  # Debug: Check current context
-        kubectl cluster-info  # Debug: Ensure cluster is reachable
+        # Ensure KUBECONFIG is set correctly
+        export KUBECONFIG=/tmp/kubeconfig  
 
+        # Debug: Verify current Kubernetes context and cluster connection
+        echo "Checking Kubeconfig..."
+        cat $KUBECONFIG
+        kubectl config view --minify
+        kubectl cluster-info
+        kubectl get nodes
+
+        # Verify Helm can connect to the cluster
+        kubectl get pods -n ${NAMESPACE}
+
+        # Deploy Helm chart
         helm upgrade --install ${CHART_NAME} . \
             --set image.repository=${REPOSITORY_URI} \
             --set image.tag=${IMAGE_TAG} \
@@ -91,6 +101,7 @@ pipeline {
         '''
     }
 }
+
 
         
 
