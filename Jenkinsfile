@@ -62,7 +62,7 @@ pipeline {
     steps {
         script {
             sh '''
-            export KUBECONFIG=/home/ubuntu/.kube/config  # Ensure correct kubeconfig
+            export KUBECONFIG=/var/lib/jenkins/.kube/config
             kubectl config view  # Debug: Check kubeconfig
             kubectl get nodes  # Debug: Ensure cluster is reachable
 
