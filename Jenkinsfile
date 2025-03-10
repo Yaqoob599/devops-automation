@@ -10,6 +10,7 @@ pipeline {
         CHART_NAME = "new1"  // Helm chart name
         NAMESPACE = "default"
         DOCKER_REGISTRY = "https://index.docker.io/v1/"
+        SCANNER_HOME= tool 'sonar-scanner'
     }
 
     stages {
@@ -24,7 +25,17 @@ pipeline {
                 sh 'mvn clean package'
             }
         }
+        stage('static-code analysis'){
+	     steps{
+	         withSonarQubeEnv('sonar-scanner') {
+	             sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.url=http://13.235.241.234:9000 -Dsonar.projectName="Java WebApp" \
+	              -Dsonar.java.binaries=. \
+                  -Dsonar.projectKey=Java-WebApp '''
 
+             }
+         }
+        }
+        
         stage('Build Docker Image') {
             steps {
                 sh """
