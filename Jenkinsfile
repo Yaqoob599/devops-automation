@@ -59,28 +59,26 @@ pipeline {
         }
 
         stage ('Helm Deploy') {
-    steps {
-        script {
-            sh '''
-            export KUBECONFIG=/var/lib/jenkins/.kube/config
-            kubectl config view  # Debug: Check kubeconfig
-            kubectl get nodes  # Debug: Ensure cluster is reachable
-
-            helm upgrade first --install ${CHART_NAME} --namespace ${NAMESPACE} --set image.tag=${IMAGE_TAG} --debug
-            '''
+            steps {
+                script {
+                    sh """
+                    export KUBECONFIG=/var/lib/jenkins/.kube/config
+                    kubectl config view  # Debug: Check kubeconfig
+                    kubectl get nodes  # Debug: Ensure cluster is reachable
+                    
+                    helm upgrade --install ${CHART_NAME} ./helm-chart --namespace ${NAMESPACE} --set image.repository=${REPOSITORY_URI},image.tag=${IMAGE_TAG} --debug
+                    """
+                }
+            }
         }
     }
-}
-
-    }
-
 
     post {
         success {
             echo "Deployment Successful!"
         }
         failure {
-            echo " Deployment Failed!"
+            echo "Deployment Failed!"
         }
     }
 }
