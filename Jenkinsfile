@@ -54,7 +54,7 @@ pipeline {
                     kubectl config view  # Debug: Check kubeconfig
                     kubectl get nodes  # Debug: Ensure cluster is reachable
                     
-                    helm upgrade --install ${CHART_NAME} ./helm-chart --namespace ${NAMESPACE} --set image.repository=${REPOSITORY_URI},image.tag=${IMAGE_TAG} --debug
+                    helm upgrade --install first1 ${CHART_NAME}  --namespace ${NAMESPACE} --set image.repository=${REPOSITORY_URI},image.tag=${IMAGE_TAG} --debug
                     """
                 }
             }
